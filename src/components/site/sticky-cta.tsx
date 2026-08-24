@@ -6,23 +6,38 @@ import { WhatsAppIcon } from "./whatsapp-icon";
 
 /**
  * Floating WhatsApp button visible on mobile only.
- * Appears after the user scrolls past the hero to avoid covering the primary CTA.
+ * Appears after the user scrolls past the hero and hides when the footer
+ * (which has its own CTA) comes into view, to avoid duplication.
  * Respects iOS safe area insets.
  */
 export function StickyCta() {
-  const [visible, setVisible] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const [footerVisible, setFooterVisible] = React.useState(false);
 
   React.useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 480);
+    const onScroll = () => setScrolled(window.scrollY > 480);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  React.useEffect(() => {
+    const footer = document.getElementById("ubicacion");
+    if (!footer) return;
+    const observer = new IntersectionObserver(
+      (entries) => setFooterVisible(entries[0].isIntersecting),
+      { threshold: 0 },
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
+  const visible = scrolled && !footerVisible;
+
   return (
     <div
       className={cnSticky(visible)}
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       aria-hidden={!visible}
     >
       <a
@@ -41,7 +56,7 @@ export function StickyCta() {
 
 function cnSticky(visible: boolean) {
   return [
-    "fixed inset-x-0 bottom-0 z-50 px-4 pb-3 pt-2 md:hidden",
+    "fixed inset-x-0 bottom-0 z-50 px-4 pt-2 md:hidden",
     "bg-gradient-to-t from-background via-background/95 to-transparent",
     "transition-all duration-300",
     visible

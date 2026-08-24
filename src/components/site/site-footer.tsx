@@ -198,8 +198,10 @@ export function SiteFooter() {
               href={waLink("Hola, quiero agendar una cita en Aura Wellness")}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-body transition-colors hover:text-primary"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-sage-soft hover:shadow-md"
+              aria-label="Agendar cita por WhatsApp"
             >
+              <WhatsAppIcon size={16} />
               Agendar Cita
             </a>
           </nav>
